@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:read_fix_korean/const/colors.dart';
 import 'package:read_fix_korean/screen/root_screen.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(const _App());
@@ -12,6 +13,10 @@ class _App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 화면 세로 고정
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: const RootScreen(),
