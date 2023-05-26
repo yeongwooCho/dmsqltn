@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:read_fix_korean/const/colors.dart';
 import 'package:read_fix_korean/screen/profile_screen.dart';
 import 'package:read_fix_korean/screen/scan_screen.dart';
 
@@ -37,6 +38,12 @@ class _HomeScreenState extends State<RootScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('ReadFixKorean'),
+        backgroundColor: Colors.white,
+        foregroundColor: BODY_TEXT_COLOR,
+        elevation: 1.0,
+      ),
       bottomNavigationBar: renderBottomNavigationBar(),
       body: TabBarView(
         controller: controller,
@@ -66,8 +73,8 @@ class _HomeScreenState extends State<RootScreen> with TickerProviderStateMixin {
 
   List<Widget> renderChildren() {
     return [
-      ProfileScreen(),
       ScanScreen(),
+      ProfileScreen(),
     ];
   }
 
