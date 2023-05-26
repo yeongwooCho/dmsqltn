@@ -13,19 +13,8 @@ class _App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        scaffoldBackgroundColor: backgroundColor,
-        sliderTheme: SliderThemeData(
-          thumbColor: primaryColor,
-          activeTrackColor: primaryColor,
-          inactiveTrackColor: secondaryColor,
-        ),
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          backgroundColor: backgroundColor,
-          selectedItemColor: primaryColor,
-          unselectedItemColor: secondaryColor,
-        ),
-      ),
+      theme: ThemeData(),
       home: const RootScreen(),
     );
+  }
 }
