@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tesseract_ocr/flutter_tesseract_ocr.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:read_fix_korean/component/camera_test.dart';
 import 'package:read_fix_korean/component/custom_card.dart';
@@ -14,24 +16,48 @@ class ScanScreen extends StatefulWidget {
 }
 
 class _ScanScreenState extends State<ScanScreen> {
-  File? _image;
+  // File? _image;
+  bool _scanning = false;
+  String _extractText = '';
+  XFile? _pickedImage;
 
-  Future getImage(ImageSource imageSource) async {
-    final image = await ImagePicker().pickImage(source: imageSource);
-
-    setState(() {
-      _image = File(image!.path); // 가져온 이미지를 _image에 저장
-    });
-  }
+  // Future<void> getImage(ImageSource imageSource) async {
+  //   final image = await ImagePicker().pickImage(source: imageSource);
+  //
+  //   setState(() {
+  //     _image = File(image!.path); // 가져온 이미지를 _image에 저장
+  //   });
+  //
+  //   // getOcrText();
+  // }
+  //
+  // Future<void> getOcrText() async {
+  //   //---- dynamic add Tessdata (Android)---- ▼
+  //   // https://github.com/tesseract-ocr/tessdata/raw/main/dan_frak.traineddata
+  //
+  //   const String langName = 'kor';
+  //   HttpClient httpClient = new HttpClient();
+  //
+  //   HttpClientRequest request = await httpClient.getUrl(Uri.parse(
+  //       'https://github.com/tesseract-ocr/tessdata/raw/main/${langName}.traineddata'));
+  //
+  //   HttpClientResponse response = await request.close();
+  //   Uint8List bytes =await consolidateHttpClientResponseBytes(response);
+  //   String dir = await FlutterTesseractOcr.getTessdataPath();
+  //
+  //   print('$dir/${langName}.traineddata');
+  //   File file = File('$dir/${langName}.traineddata');
+  //   await file.writeAsBytes(bytes);
+  // }
 
   // 이미지를 보여주는 위젯
-  Widget showImage() {
-    return SizedBox(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.width,
-        child: Image.file(File(_image!.path))
-    );
-  }
+  // Widget showImage() {
+  //   return SizedBox(
+  //       width: MediaQuery.of(context).size.width,
+  //       height: MediaQuery.of(context).size.width,
+  //       child: Image.file(File(_image!.path))
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +66,7 @@ class _ScanScreenState extends State<ScanScreen> {
       fontWeight: FontWeight.bold,
     );
 
-    return _image != null ? showImage() : Column(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -143,13 +169,41 @@ class _ScanScreenState extends State<ScanScreen> {
             ),
           ),
         ),
+
         ElevatedButton(
-          onPressed: () {
-            getImage(ImageSource.camera);
-            // Navigator.of(context).push(
-            //   MaterialPageRoute(builder: (_) => CameraExample()),
-            //   // MaterialPageRoute(builder: (_) => Text('asdf')),
-            // );
+          // getImage(ImageSource.camera);
+
+          // onPressed: () async {
+          //   setState(() {
+          //     _scanning = true;
+          //   });
+          //
+          //   // _image = getImage(ImageSource.camera);
+          //   // _image = await getImage(ImageSource.camera)
+          //
+          //   _pickedImage =
+          //   await ImagePicker().pickImage(source: ImageSource.camera);
+          //
+          //   FlutterTesseractOcr.extractText(imagePath)
+          //
+          //   _extractText =
+          //   await FlutterTesseractOcr.extractText(_pickedImage!.path);
+          //   setState(() {
+          //     _scanning = false;
+          //
+          //   });
+          // },
+          onPressed: () async {
+            setState(() {
+              _scanning = true;
+            });
+            _pickedImage =
+            await ImagePicker().pickImage(source: ImageSource.camera);
+            _extractText =
+            await FlutterTesseractOcr.extractText(_pickedImage!.path);
+            setState(() {
+              _scanning = false;
+            });
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: PRIMARY_COLOR,
@@ -168,65 +222,6 @@ class _ScanScreenState extends State<ScanScreen> {
             ],
           ),
         )
-      ],
-    );
-  }
-}
-
-
-
-void openCamera() {
-
-}
-
-class _CameraExampleState extends State<CameraExample> {
-  File? _image;
-
-  // 비동기 처리를 통해 카메라와 갤러리에서 이미지를 가져온다.
-  Future getImage(ImageSource imageSource) async {
-    final image = await ImagePicker().pickImage(source: imageSource);
-
-    setState(() {
-      _image = File(image!.path); // 가져온 이미지를 _image에 저장
-    });
-  }
-
-  // 이미지를 보여주는 위젯
-  Widget showImage() {
-    return Container(
-        color: const Color(0xffd0cece),
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.width,
-        child: Center(
-            child: _image == null
-                ? Text('No image selected.')
-                : Image.file(File(_image!.path))));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        SizedBox(height: 25.0),
-        showImage(),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            TextButton(
-              onPressed: () {
-                getImage(ImageSource.camera);
-              },
-              child: Icon(Icons.add_a_photo),
-            ),
-            TextButton(
-              onPressed: () {
-                getImage(ImageSource.gallery);
-              },
-              child: Icon(Icons.wallpaper),
-            ),
-          ],
-        ),
       ],
     );
   }
