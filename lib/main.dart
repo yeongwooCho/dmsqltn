@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:read_fix_korean/const/colors.dart';
+import 'package:read_fix_korean/screen/flutter_tesseract_ocr_testcode.dart';
 import 'package:read_fix_korean/screen/ocr_test.dart';
 import 'package:read_fix_korean/screen/root_screen.dart';
 import 'package:flutter/services.dart';
@@ -25,6 +26,7 @@ class _App extends StatelessWidget {
       home: const RootScreen(),
       // home: MyHomePage(title: '욥욥'),
       // home: HomeScreenTest(),
+      // home: MyHomePageTestTest(title: '욥욥'),
     );
   }
 }

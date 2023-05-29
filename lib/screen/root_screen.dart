@@ -39,7 +39,7 @@ class _HomeScreenState extends State<RootScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ReadFixKorean'),
+        title: Text('dmsqltn korea'),
         backgroundColor: Colors.white,
         foregroundColor: BODY_TEXT_COLOR,
         elevation: 1.0,
