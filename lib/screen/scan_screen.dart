@@ -101,11 +101,42 @@ class _ScanScreenState extends State<ScanScreen> {
     await textRecognizer.close();
 
     // 인식한 텍스트 정보를 scannedTextList 에 저장
+    List<String> recognizedTextList = [];
     for (TextBlock block in recognizedText.blocks) {
       for (TextLine line in block.lines) {
-        scannedTextList.add(line.text);
+        String lineText = line.text;
+
+        try {
+          // text에 숫자가 포함되어 있으면 제외 시키기
+          int.parse(lineText);
+        } on FormatException {
+          // '올바른 문장을 선택해 주세요'가 포함되어 있으면 제외
+          if (lineText.contains('문장을 선택해') ||
+              lineText.contains('올바른 문장을') ||
+              lineText.contains('선택해 주세요')) {
+            continue;
+          }
+
+          // text 가 비어 있으면 제외
+          if (lineText == '') {
+            continue;
+          }
+
+          // 마침표가 없으면 추가하기
+          if (!lineText.contains('.')) {
+            lineText = '$lineText.';
+          }
+
+          recognizedTextList.add(lineText);
+        }
       }
     }
+
+    // 번호 붙히기
+    recognizedTextList.asMap().forEach((index, value) {
+      scannedTextList.add('${index + 1}. $value');
+    });
+
     setState(() {});
   }
 
