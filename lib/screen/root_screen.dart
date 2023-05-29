@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:read_fix_korean/const/colors.dart';
 import 'package:read_fix_korean/screen/profile_screen.dart';

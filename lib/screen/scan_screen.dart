@@ -1,11 +1,7 @@
-import 'dart:developer';
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tesseract_ocr/flutter_tesseract_ocr.dart';
+import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:read_fix_korean/component/camera_test.dart';
 import 'package:read_fix_korean/component/custom_card.dart';
 import 'package:read_fix_korean/const/colors.dart';
 
@@ -17,255 +13,172 @@ class ScanScreen extends StatefulWidget {
 }
 
 class _ScanScreenState extends State<ScanScreen> {
-  List<String> langList = ["kor", "eng"];
-  bool isTessFileDownloading = false; // is Download tess file
-  bool isLoading = false; // is OCR
-  String _extractText = ''; // ocr에서 추출된 텍스트
-  // XFile? _pickedImage; // 찍은 이미지 파일
-  String imagePath = '';
+  final ImagePicker picker = ImagePicker(); // ImagePicker 초기화
+  bool isLoading = false; // ocr 을 통해 데이터 가져오기 진행중이니?
+  XFile? _image; // image picker를 통해 가져온 이미지 파일
+  List<String> scannedTextList = []; // ocr에서 추출된 텍스트
+  String? errorText;
 
   @override
   Widget build(BuildContext context) {
-    return isTessFileDownloading
+    return isLoading
         ? const Center(
             child: CircularProgressIndicator(),
           )
-        : getMainColumnWidget();
-  }
-
-  void onPressOpenCamera() async {
-    setState(() {
-      // _pickedImage = null;
-      isLoading = true;
-    });
-    // _pickedImage = await ImagePicker().pickImage(source: ImageSource.camera);
-    // if (_pickedImage == null) {
-    //   print('여기 $_pickedImage 널임');
-    //   return;
-    // }
-    // _ocr(pickedFile.path); // 이미지를 가져왔으면 path를 ocr에다가 집어넣음 -> 이미지를 ocr에 집어 넣음.
-    // }
-    // print('여기 $_pickedImage 널은 아님임');
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.camera);
-    if (pickedFile == null) {
-      return;
-    }
-    imagePath = pickedFile.path;
-
-    // String joinedLang = langList.join("+");
-    String joinedLang = 'kor';
-
-    _extractText = await FlutterTesseractOcr.extractText(imagePath,
-        language: joinedLang,
-        args: {
-          "psm": "4",
-          "preserve_interword_spaces": "1",
-        });
-    // Image.file(File(_pickedImage!.path));
-    // _extractText = await FlutterTesseractOcr.extractText(_pickedImage!.path,
-    //     language: joinedLang,
-    //     args: {
-    //       "preserve_interword_spaces": "1",
-    //     });
-    print('여기 2');
-    log(_extractText);
-    setState(() {
-      isLoading = false;
-    });
-  }
-
-  // // download tess file
-  // Future<void> initOcrData({required String langName}) async {
-  //   setState(() {
-  //     isTessFileDownloading = true;
-  //   });
-  //   //---- dynamic add Tessdata (Android)---- ▼
-  //   // https://github.com/tesseract-ocr/tessdata/raw/main/dan_frak.traineddata
-  //
-  //   HttpClient httpClient = new HttpClient();
-  //
-  //   HttpClientRequest request = await httpClient.getUrl(Uri.parse(
-  //       'https://github.com/tesseract-ocr/tessdata/raw/main/$langName.traineddata'));
-  //
-  //   HttpClientResponse response = await request.close();
-  //   Uint8List bytes = await consolidateHttpClientResponseBytes(response);
-  //   String dir = await FlutterTesseractOcr.getTessdataPath();
-  //
-  //   log('$dir/$langName.traineddata');
-  //   File file = File('$dir/$langName.traineddata');
-  //   await file.writeAsBytes(bytes);
-  //
-  //   setState(() {
-  //     isTessFileDownloading = false;
-  //   });
-  // }
-
-  // download tess file
-  Future<void> initOcrData({required String langName}) async {
-    print(1);
-    Directory dir = Directory(await FlutterTesseractOcr.getTessdataPath());
-    if (!dir.existsSync()) {
-      print(2);
-      dir.create();
-    }
-    print(3);
-    bool isInstalled = false;
-    dir.listSync().forEach((element) {
-      String name = element.path.split('/').last;
-      isInstalled |= name == '$langName.traineddata';
-    });
-    print(4);
-    if (!isInstalled) {
-      print(5);
-      isTessFileDownloading = true;
-      setState(() {});
-
-      HttpClient httpClient = HttpClient();
-
-      HttpClientRequest request = await httpClient.getUrl(Uri.parse(
-          'https://github.com/tesseract-ocr/tessdata/raw/main/$langName.traineddata'));
-
-      HttpClientResponse response = await request.close();
-      Uint8List bytes = await consolidateHttpClientResponseBytes(response);
-      String dir = await FlutterTesseractOcr.getTessdataPath();
-
-      print(6);
-      log('$dir/$langName.traineddata');
-      File file = File('$dir/$langName.traineddata');
-      await file.writeAsBytes(bytes);
-      print(7);
-
-      isTessFileDownloading = false;
-      setState(() {});
-    }
-    print(8);
-    print(isInstalled);
-  }
-
-  Widget getMainColumnWidget() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 20.0,
-              ),
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: Text(
-                      '추천 정답',
-                      style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  isLoading
-                      ? Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            CustomCard(
-                              isCorrect: false,
-                              title: '1. 사람들에게 사진 바람이나',
-                            ),
-                            const SizedBox(height: 8.0),
-                            CustomCard(
-                              isCorrect: true,
-                              title: '1. 사람들에게 사진 바람이나',
-                            ),
-                            const SizedBox(height: 8.0),
-                            CustomCard(
-                              isCorrect: false,
-                              title: '1. 사람들에게 사진 바람이나',
-                            ),
-                            const SizedBox(height: 8.0),
-                            CustomCard(
-                              isCorrect: false,
-                              title: '1. 사람들에게 사진 바람이나',
-                            ),
-                            const SizedBox(height: 8.0),
-                            CustomCard(
-                              isCorrect: false,
-                              title: '1. 사람들에게 사진 바람이나',
-                            ),
-                          ],
-                        ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        if (_extractText != '')
-          Container(
-            height: 100.0,
-            child: Text(
-              _extractText,
-              style: TextStyle(color: Colors.black),
-            ),
-          ),
-        Container(
-          color: Colors.black26,
-          child: isTessFileDownloading
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(),
-                      Text('download Trained language files')
-                    ],
-                  ),
-                )
-              : SizedBox(),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            print('isLoading: $isLoading, isLoading: $isTessFileDownloading');
-            setState(() {});
-          },
-          child: Text('새로고팀 하고 프린트'),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            print(langList);
-            langList.map((e) {
-              print(e);
-              initOcrData(langName: e);
-            });
-            setState(() {});
-          },
-          child: Text('데이터 불러오기'),
-        ),
-        ElevatedButton(
-          onPressed: onPressOpenCamera,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: PRIMARY_COLOR,
-            minimumSize: const Size(100, 60),
-            textStyle: const TextStyle(
-              fontSize: 18.0,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Icon(Icons.photo_camera),
-              SizedBox(width: 8.0),
-              Text('Open Camera'),
+              scannedTextList.isEmpty
+                  ? const Expanded(
+                      child: Center(
+                        child: Text(
+                          '아래 "Open Camera" 버튼을 선택해서\n한국어 텍스트를 촬영하세요',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    )
+                  : _buildCorrectAnswerListView(),
+              if (errorText != null) _buildErrorText(),
+              _buildOpenCameraButton(),
+            ],
+          );
+  }
+
+  Future initData() async {
+    isLoading = true;
+    _image = null;
+    scannedTextList = [];
+    errorText = null;
+  }
+
+  void getImage(ImageSource imageSource) async {
+    // 이미지와 텍스트 가져오기 전 모든 데이터 리셋
+    await initData();
+    setState(() {});
+
+    // pickedFile에 ImagePicker로 가져온 이미지가 담긴다.
+    final XFile? pickedFile = await picker.pickImage(source: imageSource);
+
+    // 이미지를 정상적으로 가져왔다면 텍스트 인식 실행
+    if (pickedFile != null) {
+      setState(() {
+        _image = XFile(pickedFile.path); // 가져온 이미지를 _image에 저장
+      });
+      await getRecognizedText(_image!); // 이미지를 가져온 뒤 텍스트 인식 실행
+    } else {
+      errorText = '카메라로 찍은 이미지를 가져오지 못했습니다.';
+    }
+
+    // 가져온 텍스트 문맥 파악 후 정답 추출
+    if (scannedTextList.isNotEmpty) {
+      await getRightKoreanText();
+    } else {
+      errorText = '이미지로 가져온 텍스트가 정상적이지 않습니다.';
+    }
+
+    isLoading = false;
+    setState(() {});
+  }
+
+  Future<void> getRecognizedText(XFile image) async {
+    // XFile 이미지를 InputImage 이미지로 변환
+    final InputImage inputImage = InputImage.fromFilePath(image.path);
+
+    // textRecognizer 초기화, 이때 script에 인식하고자하는 언어를 인자로 넘겨줌
+    // 한국어는 script: TextRecognitionScript.korean
+    final textRecognizer =
+        GoogleMlKit.vision.textRecognizer(script: TextRecognitionScript.korean);
+
+    // 이미지의 텍스트 인식해서 recognizedText에 저장
+    RecognizedText recognizedText =
+        await textRecognizer.processImage(inputImage);
+
+    // Release resources: 리소스 관리
+    await textRecognizer.close();
+
+    // 인식한 텍스트 정보를 scannedTextList 에 저장
+    for (TextBlock block in recognizedText.blocks) {
+      for (TextLine line in block.lines) {
+        scannedTextList.add(line.text);
+      }
+    }
+    setState(() {});
+  }
+
+  Future<void> getRightKoreanText() async {
+    print('가즈아 쳇치피티');
+  }
+
+  Widget _buildCorrectAnswerListView() {
+    return Expanded(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16.0,
+            vertical: 20.0,
+          ),
+          child: Column(
+            children: [
+              const SizedBox(
+                width: double.infinity,
+                child: Text(
+                  '추천 정답',
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: scannedTextList
+                    .map<CustomCard>((element) =>
+                        CustomCard(isCorrect: true, title: element))
+                    .toList(),
+              ),
             ],
           ),
-        )
-      ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorText() {
+    return Text(
+      errorText ?? '',
+      style: const TextStyle(
+        fontSize: 20.0,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  Widget _buildOpenCameraButton() {
+    return ElevatedButton(
+      onPressed: () {
+        getImage(ImageSource.camera);
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: PRIMARY_COLOR,
+        minimumSize: const Size(100, 60),
+        textStyle: const TextStyle(
+          fontSize: 18.0,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      child: const Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.photo_camera),
+          SizedBox(width: 8.0),
+          Text('Open Camera'),
+        ],
+      ),
     );
   }
 }
