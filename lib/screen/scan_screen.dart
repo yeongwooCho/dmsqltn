@@ -1,9 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:read_fix_korean/component/custom_card.dart';
 import 'package:read_fix_korean/const/colors.dart';
+import 'package:read_fix_korean/repository/chat_gpt_repository.dart';
 
 class ScanScreen extends StatefulWidget {
   const ScanScreen({Key? key}) : super(key: key);
@@ -18,6 +18,7 @@ class _ScanScreenState extends State<ScanScreen> {
   XFile? _image; // image picker를 통해 가져온 이미지 파일
   List<String> scannedTextList = []; // ocr에서 추출된 텍스트
   String? errorText;
+  ChatGPTRepository repository = ChatGPTRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +76,7 @@ class _ScanScreenState extends State<ScanScreen> {
 
     // 가져온 텍스트 문맥 파악 후 정답 추출
     if (scannedTextList.isNotEmpty) {
-      await getRightKoreanText();
+      await checkRightKoreanText();
     } else {
       errorText = '이미지로 가져온 텍스트가 정상적이지 않습니다.';
     }
@@ -134,14 +135,34 @@ class _ScanScreenState extends State<ScanScreen> {
 
     // 번호 붙히기
     recognizedTextList.asMap().forEach((index, value) {
-      scannedTextList.add('${index + 1}. $value');
+      if (recognizedTextList.length != index + 1) {
+        scannedTextList.add('${index + 1}. $value');
+      } else {
+        scannedTextList.add('${index + 1}. $value\n');
+      }
     });
 
     setState(() {});
   }
 
-  Future<void> getRightKoreanText() async {
-    print('가즈아 쳇치피티');
+  Future<void> checkRightKoreanText() async {
+    // 다음 5개의 문장 중에 의미와 문법적으로 가장 완전한 문장을 선택해줘.
+    String question = '다음 5개의 문장 중에 의미와 문법적으로 가장 완전한 문장을 선택해줘.';
+    for (String element in scannedTextList) {
+      question += " $element";
+      print("element: $element");
+    }
+    print("pre question: $question");
+    final answer = await repository.requestQuestion(prompt: question);
+    print("post question: $question");
+    print("answer: $answer");
+
+    // if (scannedTextList.contains(answer)) {
+    //   print(answer);
+    // } else {
+    //   print(answer);
+    //   print('오류데스');
+    // }
   }
 
   Widget _buildCorrectAnswerListView() {
