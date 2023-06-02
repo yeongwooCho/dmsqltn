@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:read_fix_korean/component/custom_card.dart';
@@ -23,7 +24,7 @@ class _ScanScreenState extends State<ScanScreen> {
   bool isLoading = false; // ocr 을 통해 데이터 가져오기 진행중이니?
   XFile? _image; // image picker를 통해 가져온 이미지 파일
   List<String> scannedTextList = []; // ocr에서 추출된 텍스트
-  String? errorText;
+  String errorText = '';
   ChatGPTRepository repository = ChatGPTRepository();
   String checkAnswer = '';
 
@@ -50,7 +51,6 @@ class _ScanScreenState extends State<ScanScreen> {
                       ),
                     )
                   : _buildCorrectAnswerListView(),
-              if (errorText != null) _buildErrorText(),
               _buildOpenCameraButton(),
             ],
           );
@@ -60,7 +60,7 @@ class _ScanScreenState extends State<ScanScreen> {
     isLoading = true;
     _image = null;
     scannedTextList = [];
-    errorText = null;
+    errorText = '';
     checkAnswer = '';
   }
 
@@ -100,6 +100,7 @@ class _ScanScreenState extends State<ScanScreen> {
         '${DateTime.now().difference(startDateTime).inSeconds}.${DateTime.now().difference(startDateTime).inMilliseconds}';
     widget.onRefreshRootScreen!();
     setState(() {});
+    renderToast();
   }
 
   Future<void> getRecognizedText(XFile image) async {
@@ -227,14 +228,28 @@ class _ScanScreenState extends State<ScanScreen> {
     );
   }
 
-  Widget _buildErrorText() {
-    return Text(
-      errorText ?? '',
-      style: const TextStyle(
-        fontSize: 20.0,
-        fontWeight: FontWeight.bold,
-      ),
-    );
+  void renderToast() {
+    if (errorText.isNotEmpty) {
+      Fluttertoast.showToast(
+          msg: "정답 추출 실패!\n$errorText",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 4,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+    } else {
+      Fluttertoast.showToast(
+          msg: "정답 추출 성공!",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 2,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+    }
   }
 
   Widget _buildOpenCameraButton() {
