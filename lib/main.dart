@@ -9,6 +9,8 @@ void main() {
 }
 
 class _App extends StatelessWidget {
+  final String asdf = '안녕 하세요.';
+
   const _App({Key? key}) : super(key: key);
 
   @override
@@ -19,11 +21,13 @@ class _App extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
 
+    print(asdf.contains('안녕 하'));
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(),
-      // home: const RootScreen(),
-      home: const TestScreen(),
+      home: const RootScreen(),
+      // home: const TestScreen(),
     );
   }
 }

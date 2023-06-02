@@ -19,6 +19,7 @@ class _ScanScreenState extends State<ScanScreen> {
   List<String> scannedTextList = []; // ocr에서 추출된 텍스트
   String? errorText;
   ChatGPTRepository repository = ChatGPTRepository();
+  String checkAnswer = '';
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +55,7 @@ class _ScanScreenState extends State<ScanScreen> {
     _image = null;
     scannedTextList = [];
     errorText = null;
+    checkAnswer = '';
   }
 
   void getImage(ImageSource imageSource) async {
@@ -135,11 +137,7 @@ class _ScanScreenState extends State<ScanScreen> {
 
     // 번호 붙히기
     recognizedTextList.asMap().forEach((index, value) {
-      if (recognizedTextList.length != index + 1) {
-        scannedTextList.add('${index + 1}. $value');
-      } else {
-        scannedTextList.add('${index + 1}. $value\n');
-      }
+      scannedTextList.add('${index + 1}. $value');
     });
 
     setState(() {});
@@ -150,19 +148,29 @@ class _ScanScreenState extends State<ScanScreen> {
     String question = '다음 5개의 문장 중에 의미와 문법적으로 가장 완전한 문장을 선택해줘.';
     for (String element in scannedTextList) {
       question += " $element";
-      print("element: $element");
     }
-    print("pre question: $question");
-    final answer = await repository.requestQuestion(prompt: question);
-    print("post question: $question");
-    print("answer: $answer");
 
-    // if (scannedTextList.contains(answer)) {
-    //   print(answer);
-    // } else {
-    //   print(answer);
-    //   print('오류데스');
-    // }
+    // 정답 텍스트 받아오기
+    String answer = await repository.requestQuestion(prompt: question);
+
+    // 텍스트 전처리
+    String returnText = answer.replaceAll('.', '').trim();
+    if (returnText.contains('1') ||
+        returnText.contains('2') ||
+        returnText.contains('3') ||
+        returnText.contains('4') ||
+        returnText.contains('5')) {
+      returnText = returnText.replaceRange(0, 1, '').trim();
+    }
+
+    for (String element in scannedTextList) {
+      if (element.contains(returnText)) {
+        checkAnswer = element;
+        break;
+      } else {
+        checkAnswer = '정답 없음';
+      }
+    }
   }
 
   Widget _buildCorrectAnswerListView() {
@@ -189,8 +197,12 @@ class _ScanScreenState extends State<ScanScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: scannedTextList
-                    .map<CustomCard>((element) =>
-                        CustomCard(isCorrect: true, title: element))
+                    .map<CustomCard>(
+                      (element) => CustomCard(
+                        isCorrect: (checkAnswer == element),
+                        title: element,
+                      ),
+                    )
                     .toList(),
               ),
             ],

@@ -6,9 +6,6 @@ import 'package:read_fix_korean/settings.dart';
 
 const String token = OPENAI_API_KEY;
 
-const String question =
-    "1. 걱정하지 수도 군 고향을. 2. 같아 보름 안에는 것 끝날. 3. 닳아 숨이 찾기가 걷어. 4. 가스레인지 위에 올려놓다. 5. 중이라 썰매 신인. 이 5개의 문장 중에 의미와 문법적으로 가장 완전한 문장을 선택해줘.\n";
-
 class ChatGPTRepository {
   final openAI = OpenAI.instance.build(
     token: token,
@@ -17,36 +14,6 @@ class ChatGPTRepository {
     ),
     enableLog: true,
   );
-
-  // void test1() async {
-  //   final request = CompleteText(
-  //     prompt: question,
-  //     model: Model.textDavinci3,
-  //     maxTokens: 200,
-  //   );
-  //
-  //   final response = await openAI.onCompletion(request: request);
-  //
-  //   print(response?.choices);
-  //   print(response?.conversionId);
-  //   print(response?.created);
-  //   print(response?.model);
-  //   print(response?.object.toString());
-  //   print(response?.usage);
-  //   print(response.toString());
-  //
-  //   print('-----------');
-  //   print(response?.choices.map((e) {
-  //     print('-----------gkgkg1');
-  //     print(e);
-  //     print(e.text);
-  //     print(e.index);
-  //     print(e.id);
-  //     print(e.finishReason);
-  //     print('-----------gkgkg2');
-  //   }));
-  //   print('-----------');
-  // }
 
   Future<String> requestQuestion({
     required String prompt,
@@ -61,73 +28,18 @@ class ChatGPTRepository {
       // presencePenalty: 0.0,
       // stop: ['\n'],
     );
+    String returnText = '';
 
-    debugPrint("prompt: $prompt");
-    debugPrint("prompt: ${prompt.contains('\n')}");
-    debugPrint("request: $request");
+    try {
+      final response = await openAI.onCompletion(request: request);
+      returnText = response?.choices.last.text ?? '답 없음';
+    } on OpenAIRateLimitError catch (err) {
+      debugPrint('catch error ->${err.data?.error?.toMap()}');
+    }
 
-    final response = await openAI.onCompletion(request: request);
-    return response?.choices.last.text ?? '답 없음';
-
-  //   debugPrint("request: $response");
-  //   debugPrint("request choices: ${response?.choices}");
-  //   print('-----------1');
-  //   print('-----------1');
-  //   debugPrint("request length: ${response?.choices.length}");
-  //   print('-----------2');
-  //   print('-----------2');
-  //   debugPrint("request text: ${response?.choices.first.text}");
-  //   print('-----------3');
-  //
-  //   print('-----------3');
-  //   debugPrint(response?.choices[0].text);
-  //   print('-----------4');
-  //   print('-----------4');
-  //   debugPrint("request: ${response?.choices.first.finishReason!}");
-  //   print('-----------5');
-  //   print('-----------5');
-  //   debugPrint("request text: ${response?.choices.last.text}");
-  //   print('-----------6');
-  //   print('-----------6');
-  //   debugPrint("request: ${response?.choices.last}");
-  //   print('-----------7');
-  //   print('-----------7');
-  //
-  //
-  //   print('-----------');
-  //   print(response?.choices.map((e) {
-  //     print('-----------gkgkg1');
-  //     print(e);
-  //     print(e.text);
-  //     print(e.index);
-  //     print(e.id);
-  //     print(e.finishReason);
-  //     print('-----------gkgkg2');
-  //   }));
-  //   print('-----------');
-  //
-  //   print(response?.choices.last.text);
-  //
-  //   if (response?.choices == null) {
-  //     return '바보';
-  //   }
-  //
-  //   String answer = '';
-  //   response?.choices.map((e) {
-  //     print("${e}");
-  //     print(e.text);
-  //     answer += e.text;
-  //   });
-  //
-  //   // for (var choice in response!.choices) {
-  //   //   answer += choice.text;
-  //   // }
-  //
-  //   // response.choices.map((e) => answer += e.text);
-  //
-  //   return answer;
-  // }
-}}
+    return returnText;
+  }
+}
 
 // "model": "text-davinci-003",
 // // 모델에게 입력으로 제공되는 텍스트 또는 질문을 의미
