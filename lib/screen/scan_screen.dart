@@ -79,13 +79,20 @@ class _ScanScreenState extends State<ScanScreen> {
         _image = XFile(pickedFile.path); // 가져온 이미지를 _image에 저장
       });
       await getRecognizedText(_image!); // 이미지를 가져온 뒤 텍스트 인식 실행
-
-      if (scannedTextList.length != 5) {
-        errorText = '사진에서 글자를 정상적으로 뽑아오지 못했습니다.';
-      }
     } else {
       errorText = '카메라로 찍은 이미지를 가져오지 못했습니다.';
     }
+
+    if (scannedTextList.length != 5) {
+      errorText = '사진에서 글자를 정상적으로 뽑아오지 못했습니다.';
+    }
+
+    // scannedTextList.forEach((element) {
+    //   element.contains(1)
+    // });
+    // if (scannedTextList){
+    //
+    // }
 
     // 가져온 텍스트 문맥 파악 후 정답 추출
     if (scannedTextList.isNotEmpty) {
@@ -125,29 +132,33 @@ class _ScanScreenState extends State<ScanScreen> {
       for (TextLine line in block.lines) {
         String lineText = line.text;
 
-        try {
-          // text에 숫자가 포함되어 있으면 제외 시키기
-          int.parse(lineText);
-        } on FormatException {
-          // '올바른 문장을 선택해 주세요'가 포함되어 있으면 제외
-          if (lineText.contains('문장을 선택해') ||
-              lineText.contains('올바른 문장을') ||
-              lineText.contains('선택해 주세요')) {
-            continue;
-          }
-
+        if (lineText.contains('1') ||
+            lineText.contains('2') ||
+            lineText.contains('3') ||
+            lineText.contains('4') ||
+            lineText.contains('5') ||
+            lineText.contains('6') ||
+            lineText.contains('7') ||
+            lineText.contains('8') ||
+            lineText.contains('9') ||
+            lineText.contains('0')) {
+          // text에 숫자가 포함되어 있으면 제외
+          continue;
+        } else if (lineText.contains('문장을 선택해') ||
+            lineText.contains('올바른 문장을') ||
+            lineText.contains('선택해 주세요')) {
+          continue;
+        } else if (lineText == '') {
           // text 가 비어 있으면 제외
-          if (lineText == '') {
-            continue;
-          }
-
-          // 마침표가 없으면 추가하기
-          if (!lineText.contains('.')) {
-            lineText = '$lineText.';
-          }
-
-          recognizedTextList.add(lineText);
+          continue;
         }
+
+        if (!lineText.contains('.')) {
+          // 마침표가 없으면 추가하기
+          lineText = '$lineText.';
+        }
+
+        recognizedTextList.add(lineText);
       }
     }
 
@@ -237,8 +248,7 @@ class _ScanScreenState extends State<ScanScreen> {
           timeInSecForIosWeb: 4,
           backgroundColor: Colors.red,
           textColor: Colors.white,
-          fontSize: 16.0
-      );
+          fontSize: 16.0);
     } else {
       Fluttertoast.showToast(
           msg: "정답 추출 성공!",
@@ -247,8 +257,7 @@ class _ScanScreenState extends State<ScanScreen> {
           timeInSecForIosWeb: 2,
           backgroundColor: Colors.green,
           textColor: Colors.white,
-          fontSize: 16.0
-      );
+          fontSize: 16.0);
     }
   }
 

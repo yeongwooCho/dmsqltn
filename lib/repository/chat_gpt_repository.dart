@@ -21,8 +21,8 @@ class ChatGPTRepository {
     final request = CompleteText(
       prompt: prompt,
       model: Model.textDavinci3,
-      maxTokens: 200,
-      // temperature: 0,
+      maxTokens: 100,
+      temperature: 0.1,
       // topP: 1,
       // frequencyPenalty: 0.0,
       // presencePenalty: 0.0,
