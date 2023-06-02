@@ -172,16 +172,21 @@ class _ScanScreenState extends State<ScanScreen> {
 
   Future<void> checkRightKoreanText() async {
     // 다음 5개의 문장 중에 의미와 문법적으로 가장 완전한 문장을 선택해줘.
-    String question = '다음 5개의 문장 중에 의미와 문법적으로 가장 완전한 문장을 선택해줘.';
+    // String question = '다음 5개의 문장 중에 의미와 문법적으로 가장 완전한 문장을 선택해줘.';
+    String question = '위의 5개의 문장 중에 가장 한국어 의미를 갖는 문장을 대답해 주세요.';
     for (String element in scannedTextList) {
       question += " $element";
     }
+    print("question: $question");
 
     // 정답 텍스트 받아오기
     String answer = await repository.requestQuestion(prompt: question);
+    print("answer: $answer");
 
     // 텍스트 전처리
     String returnText = answer.replaceAll('.', '').trim();
+    returnText = returnText.replaceAll('"', '').trim();
+    returnText = returnText.split(':').last.trim();
     if (returnText.contains('1') ||
         returnText.contains('2') ||
         returnText.contains('3') ||
