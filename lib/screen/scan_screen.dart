@@ -2,11 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:read_fix_korean/component/custom_card.dart';
+import 'package:read_fix_korean/component/variable.dart';
 import 'package:read_fix_korean/const/colors.dart';
 import 'package:read_fix_korean/repository/chat_gpt_repository.dart';
 
 class ScanScreen extends StatefulWidget {
-  const ScanScreen({Key? key}) : super(key: key);
+  final Function()? onRefreshRootScreen;
+
+  const ScanScreen({
+    Key? key,
+    required this.onRefreshRootScreen,
+  }) : super(key: key);
 
   @override
   State<ScanScreen> createState() => _ScanScreenState();
@@ -65,6 +71,7 @@ class _ScanScreenState extends State<ScanScreen> {
 
     // pickedFile에 ImagePicker로 가져온 이미지가 담긴다.
     final XFile? pickedFile = await picker.pickImage(source: imageSource);
+    DateTime startDateTime = DateTime.now();
 
     // 이미지를 정상적으로 가져왔다면 텍스트 인식 실행
     if (pickedFile != null) {
@@ -84,6 +91,10 @@ class _ScanScreenState extends State<ScanScreen> {
     }
 
     isLoading = false;
+
+    RUNNING_DURATION =
+        '${DateTime.now().difference(startDateTime).inSeconds}.${DateTime.now().difference(startDateTime).inMilliseconds}';
+    widget.onRefreshRootScreen!();
     setState(() {});
   }
 

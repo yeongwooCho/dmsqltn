@@ -1,0 +1,1 @@
+String RUNNING_DURATION = '0.0000';
