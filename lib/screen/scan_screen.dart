@@ -79,6 +79,10 @@ class _ScanScreenState extends State<ScanScreen> {
         _image = XFile(pickedFile.path); // 가져온 이미지를 _image에 저장
       });
       await getRecognizedText(_image!); // 이미지를 가져온 뒤 텍스트 인식 실행
+
+      if (scannedTextList.length != 5) {
+        errorText = '사진에서 글자를 정상적으로 뽑아오지 못했습니다.';
+      }
     } else {
       errorText = '카메라로 찍은 이미지를 가져오지 못했습니다.';
     }

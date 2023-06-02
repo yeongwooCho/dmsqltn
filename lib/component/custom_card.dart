@@ -28,16 +28,22 @@ class CustomCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    title,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-                isCorrect
-                    ? const Icon(Icons.check_circle)
-                    : const Icon(Icons.circle_outlined)
+                Padding(
+                  padding: const EdgeInsets.only(left: 10.0),
+                  child: isCorrect
+                      ? const Icon(Icons.check_circle)
+                      : const Icon(Icons.circle_outlined),
+                )
               ],
             ),
           ),
