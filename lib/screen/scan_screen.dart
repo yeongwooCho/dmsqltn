@@ -80,24 +80,20 @@ class _ScanScreenState extends State<ScanScreen> {
       });
       await getRecognizedText(_image!); // 이미지를 가져온 뒤 텍스트 인식 실행
     } else {
+      await initData();
       errorText = '카메라로 찍은 이미지를 가져오지 못했습니다.';
     }
 
     if (scannedTextList.length != 5) {
+      await initData();
       errorText = '사진에서 글자를 정상적으로 뽑아오지 못했습니다.';
     }
-
-    // scannedTextList.forEach((element) {
-    //   element.contains(1)
-    // });
-    // if (scannedTextList){
-    //
-    // }
 
     // 가져온 텍스트 문맥 파악 후 정답 추출
     if (scannedTextList.isNotEmpty) {
       await checkRightKoreanText();
     } else {
+      await initData();
       errorText = '이미지로 가져온 텍스트가 정상적이지 않습니다.';
     }
 
@@ -153,10 +149,10 @@ class _ScanScreenState extends State<ScanScreen> {
           continue;
         }
 
-        if (!lineText.contains('.')) {
-          // 마침표가 없으면 추가하기
-          lineText = '$lineText.';
-        }
+        String tempText = lineText.replaceAll('.', '');
+        tempText = '$tempText.';
+
+        debugPrint('사진 블록 라인 lineText: $lineText');
 
         recognizedTextList.add(lineText);
       }
@@ -166,27 +162,27 @@ class _ScanScreenState extends State<ScanScreen> {
     recognizedTextList.asMap().forEach((index, value) {
       scannedTextList.add('${index + 1}. $value');
     });
+    print('여기여기: $scannedTextList');
 
     setState(() {});
   }
 
   Future<void> checkRightKoreanText() async {
-    // 다음 5개의 문장 중에 의미와 문법적으로 가장 완전한 문장을 선택해줘.
-    // String question = '다음 5개의 문장 중에 의미와 문법적으로 가장 완전한 문장을 선택해줘.';
-    String question = '위의 5개의 문장 중에 가장 한국어 의미를 갖는 문장을 대답해 주세요.';
+    String question = '다음은 한국어 문장 5개 중에 문맥이 가장 자연스러운 문장 찾기 문제 입니다.';
     for (String element in scannedTextList) {
       question += " $element";
     }
-    print("question: $question");
+    question += '정답은 ;';
+    debugPrint("question: $question");
 
     // 정답 텍스트 받아오기
-    String answer = await repository.requestQuestion(prompt: question);
-    print("answer: $answer");
+    String answer = await repository.chatComplete(content: question);
+    debugPrint("answer: $answer");
 
     // 텍스트 전처리
     String returnText = answer.replaceAll('.', '').trim();
-    returnText = returnText.replaceAll('"', '').trim();
-    returnText = returnText.split(':').last.trim();
+    // returnText = returnText.replaceAll('"', '').trim();
+    // returnText = returnText.split(':').last.trim();
     if (returnText.contains('1') ||
         returnText.contains('2') ||
         returnText.contains('3') ||
@@ -194,14 +190,20 @@ class _ScanScreenState extends State<ScanScreen> {
         returnText.contains('5')) {
       returnText = returnText.replaceRange(0, 1, '').trim();
     }
+    if (returnText.contains('"')) {
+      returnText = returnText.split('"')[1].trim();
+    }
 
+    debugPrint('scannedTextList: $scannedTextList');
     for (String element in scannedTextList) {
       if (element.contains(returnText)) {
         checkAnswer = element;
         break;
-      } else {
-        checkAnswer = '정답 없음';
       }
+    }
+    debugPrint('checkAnswer: $checkAnswer');
+    if (checkAnswer.isEmpty) {
+      errorText = '받아온 답과 일치하는 문장이 없습니다.';
     }
   }
 
@@ -231,7 +233,7 @@ class _ScanScreenState extends State<ScanScreen> {
                 children: scannedTextList
                     .map<CustomCard>(
                       (element) => CustomCard(
-                        isCorrect: (checkAnswer == element),
+                        isCorrect: (checkAnswer.isNotEmpty && checkAnswer == element),
                         title: element,
                       ),
                     )
