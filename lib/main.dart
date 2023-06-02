@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:read_fix_korean/repository/chat_gpt_repository.dart';
-import 'package:read_fix_korean/repository/test_screen.dart';
 import 'package:read_fix_korean/screen/root_screen.dart';
 import 'package:flutter/services.dart';
 

@@ -10,7 +10,7 @@ class ChatGPTRepository {
   final openAI = OpenAI.instance.build(
     token: token,
     baseOption: HttpSetup(
-      receiveTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 5),
     ),
     enableLog: true,
   );
