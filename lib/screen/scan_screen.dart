@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:read_fix_korean/component/custom_card.dart';
 import 'package:read_fix_korean/component/variable.dart';
@@ -112,8 +112,7 @@ class _ScanScreenState extends State<ScanScreen> {
 
     // textRecognizer 초기화, 이때 script에 인식하고자하는 언어를 인자로 넘겨줌
     // 한국어는 script: TextRecognitionScript.korean
-    final textRecognizer =
-        GoogleMlKit.vision.textRecognizer(script: TextRecognitionScript.korean);
+    final textRecognizer = TextRecognizer(script: TextRecognitionScript.korean);
 
     // 이미지의 텍스트 인식해서 recognizedText에 저장
     RecognizedText recognizedText =
