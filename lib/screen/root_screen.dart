@@ -75,7 +75,7 @@ class _HomeScreenState extends State<RootScreen> with TickerProviderStateMixin {
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.person),
-          label: 'Profile',
+          label: 'Login',
         ),
       ],
       onTap: (int index) {

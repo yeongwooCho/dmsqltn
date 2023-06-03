@@ -32,7 +32,7 @@ class ProfileScreen extends StatelessWidget {
           children: [
             Center(
               child: Text(
-                '로그인 코드',
+                'Login Code',
                 style: TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold,
@@ -75,7 +75,7 @@ class ProfileScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              child: Text('입력'),
+              child: Text('로그인'),
             ),
             const SizedBox(height: 32.0),
             Text(
@@ -83,7 +83,7 @@ class ProfileScreen extends StatelessWidget {
               style: titleTextStyle,
             ),
             Text(
-              '오픈카톡 readfixko',
+              '오픈카톡 dmsqltn',
               style: descriptionTextStyle,
             ),
             const SizedBox(height: 16.0),

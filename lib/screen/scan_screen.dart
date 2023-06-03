@@ -42,9 +42,9 @@ class _ScanScreenState extends State<ScanScreen> {
                   ? const Expanded(
                       child: Center(
                         child: Text(
-                          '아래 "Open Camera" 버튼을 선택해서\n한국어 텍스트를 촬영하세요',
+                          'Hãy nhấp chuột vào camera\nvà quay vào chữ tiếng Hàn',
                           style: TextStyle(
-                            fontSize: 16.0,
+                            fontSize: 20.0,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -285,7 +285,7 @@ class _ScanScreenState extends State<ScanScreen> {
         children: [
           Icon(Icons.photo_camera),
           SizedBox(width: 8.0),
-          Text('Open Camera'),
+          Text('Camera'),
         ],
       ),
     );
