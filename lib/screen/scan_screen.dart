@@ -6,6 +6,7 @@ import 'package:read_fix_korean/component/custom_card.dart';
 import 'package:read_fix_korean/component/variable.dart';
 import 'package:read_fix_korean/const/colors.dart';
 import 'package:read_fix_korean/repository/chat_gpt_repository.dart';
+import 'package:read_fix_korean/settings.dart';
 
 class ScanScreen extends StatefulWidget {
   final Function()? onRefreshRootScreen;
@@ -84,14 +85,18 @@ class _ScanScreenState extends State<ScanScreen> {
       errorText = '카메라로 찍은 이미지를 가져오지 못했습니다.';
     }
 
-    if (scannedTextList.length != 5) {
-      await initData();
-      errorText = '사진에서 글자를 정상적으로 뽑아오지 못했습니다.';
-    }
-
     // 가져온 텍스트 문맥 파악 후 정답 추출
     if (scannedTextList.isNotEmpty) {
-      await checkRightKoreanText();
+      for (String scannedText in scannedTextList) {
+        for (String correct in corrects) {
+          if (correct.contains(scannedText)) {
+            checkAnswer = scannedText;
+          }
+        }
+      }
+      if (checkAnswer.isEmpty) {
+        await checkRightKoreanText();
+      }
     } else {
       await initData();
       errorText = '이미지로 가져온 텍스트가 정상적이지 않습니다.';
@@ -103,7 +108,7 @@ class _ScanScreenState extends State<ScanScreen> {
         '${DateTime.now().difference(startDateTime).inSeconds}.${DateTime.now().difference(startDateTime).inMilliseconds}';
     widget.onRefreshRootScreen!();
     setState(() {});
-    renderToast();
+    _renderToast();
   }
 
   Future<void> getRecognizedText(XFile image) async {
@@ -125,7 +130,7 @@ class _ScanScreenState extends State<ScanScreen> {
     List<String> recognizedTextList = [];
     for (TextBlock block in recognizedText.blocks) {
       for (TextLine line in block.lines) {
-        String lineText = line.text;
+        String lineText = line.text.trim();
 
         if (lineText.contains('1') ||
             lineText.contains('2') ||
@@ -148,54 +153,38 @@ class _ScanScreenState extends State<ScanScreen> {
           continue;
         }
 
-        String tempText = lineText.replaceAll('.', '');
-        tempText = '$tempText.';
+        String tempText = "${lineText.replaceAll('.', '')}.";
+        recognizedTextList.add(tempText);
 
         debugPrint('사진 블록 라인 lineText: $lineText');
-
-        recognizedTextList.add(lineText);
+        debugPrint('사진 블록 라인 tempText: $lineText');
       }
     }
 
-    // 번호 붙히기
-    recognizedTextList.asMap().forEach((index, value) {
-      scannedTextList.add('${index + 1}. $value');
-    });
-    print('여기여기: $scannedTextList');
-
-    setState(() {});
+    if (recognizedTextList.length == 5) {
+      scannedTextList = recognizedTextList;
+    } else {
+      errorText = '사진에서 글자를 정상적으로 뽑아오지 못했습니다.';
+    }
   }
 
   Future<void> checkRightKoreanText() async {
-    String question = '다음은 한국어 문장 5개 중에 문맥이 가장 자연스러운 문장 찾기 문제 입니다.';
-    for (String element in scannedTextList) {
-      question += " $element";
+    String question = 'Please choose the most complete sentence in terms of meaning and grammar from the following 5 sentences.';
+    for (var element in scannedTextList) {
+      question += ' $element';
     }
-    question += '정답은 ;';
+
     debugPrint("question: $question");
 
     // 정답 텍스트 받아오기
     String answer = await repository.chatComplete(content: question);
     debugPrint("answer: $answer");
 
-    // 텍스트 전처리
-    String returnText = answer.replaceAll('.', '').trim();
-    // returnText = returnText.replaceAll('"', '').trim();
-    // returnText = returnText.split(':').last.trim();
-    if (returnText.contains('1') ||
-        returnText.contains('2') ||
-        returnText.contains('3') ||
-        returnText.contains('4') ||
-        returnText.contains('5')) {
-      returnText = returnText.replaceRange(0, 1, '').trim();
-    }
-    if (returnText.contains('"')) {
-      returnText = returnText.split('"')[1].trim();
-    }
+    String refineText = _textPreprocessing(answer: answer);
 
     debugPrint('scannedTextList: $scannedTextList');
     for (String element in scannedTextList) {
-      if (element.contains(returnText)) {
+      if (element.contains(refineText)) {
         checkAnswer = element;
         break;
       }
@@ -204,6 +193,28 @@ class _ScanScreenState extends State<ScanScreen> {
     if (checkAnswer.isEmpty) {
       errorText = '받아온 답과 일치하는 문장이 없습니다.';
     }
+  }
+
+  String _textPreprocessing({required String answer}) {
+    // TODO: 텍스트 전처리
+    String returnText = answer.trim();
+
+    returnText = returnText.split('.')[0].trim();
+    // flutter: answer: 오페라를 한번 보러 가봐. (Let's go see an opera.)
+    // returnText = answer.replaceAll('.', '').trim();
+    // returnText = returnText.replaceAll('"', '').trim();
+    // returnText = returnText.split(':').last.trim();
+    // if (returnText.contains('1') ||
+    //     returnText.contains('2') ||
+    //     returnText.contains('3') ||
+    //     returnText.contains('4') ||
+    //     returnText.contains('5')) {
+    //   returnText = returnText.replaceRange(0, 1, '').trim();
+    // }
+    // if (returnText.contains('"')) {
+    //   returnText = returnText.split('"')[1].trim();
+    // }
+    return returnText;
   }
 
   Widget _buildCorrectAnswerListView() {
@@ -232,7 +243,8 @@ class _ScanScreenState extends State<ScanScreen> {
                 children: scannedTextList
                     .map<CustomCard>(
                       (element) => CustomCard(
-                        isCorrect: (checkAnswer.isNotEmpty && checkAnswer == element),
+                        isCorrect:
+                            (checkAnswer.isNotEmpty && checkAnswer == element),
                         title: element,
                       ),
                     )
@@ -245,7 +257,7 @@ class _ScanScreenState extends State<ScanScreen> {
     );
   }
 
-  void renderToast() {
+  void _renderToast() {
     if (errorText.isNotEmpty) {
       Fluttertoast.showToast(
           msg: "정답 추출 실패!\n$errorText",
