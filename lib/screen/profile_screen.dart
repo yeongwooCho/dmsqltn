@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:read_fix_korean/const/colors.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  final bool isLogin;
+
+  const ProfileScreen({
+    Key? key,
+    required this.isLogin,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

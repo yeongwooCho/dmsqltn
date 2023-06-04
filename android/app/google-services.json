@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "267940741524",
+    "firebase_url": "https://dmsqltn-faea3-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "dmsqltn-faea3",
+    "storage_bucket": "dmsqltn-faea3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:267940741524:android:2b1313515897b2ecf2cf81",
+        "android_client_info": {
+          "package_name": "com.choyeongwoo.dmsqltn"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "267940741524-p0s631d023lm3ts89q6s441f2kiqm7dq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-EvhPKy5zif1hhvuZjaxv3iQz1wX9yBw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "267940741524-p0s631d023lm3ts89q6s441f2kiqm7dq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "267940741524-7hqi0vorvcs60ov2d6mqca9gcsruc75r.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.choyeongwoo.dmsqltn"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

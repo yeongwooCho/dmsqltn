@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:read_fix_korean/screen/root_screen.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(const _App());
 }
 
@@ -25,3 +33,55 @@ class _App extends StatelessWidget {
     );
   }
 }
+
+// class TestScreen extends StatefulWidget {
+//   const TestScreen({Key? key}) : super(key: key);
+//
+//   @override
+//   State<TestScreen> createState() => _TestScreenState();
+// }
+//
+// class _TestScreenState extends State<TestScreen> {
+//   String testValue = '하이하이';
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: SafeArea(
+//         child: Center(
+//           child: Column(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             crossAxisAlignment: CrossAxisAlignment.stretch,
+//             children: [
+//               Text(
+//                 testValue,
+//                 style: TextStyle(
+//                   fontSize: 20.0,
+//                 ),
+//               ),
+//               ElevatedButton(
+//                 onPressed: () async {
+//
+//                   // final snapshot = await ref.child('users/$userId').get();
+//                   // if (snapshot.exists) {
+//                   //   print(snapshot.value);
+//                   // } else {
+//                   //   print('No data available.');
+//                   // }
+//
+//                   // testValue = asdf.toString();
+//                   // setState(() {
+//
+//                   });
+//
+//                   // testValue = event.snapshot.value ?? 'Anonymous';
+//                 },
+//                 child: Text(testValue),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }

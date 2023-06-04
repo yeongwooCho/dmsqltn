@@ -1,4 +1,4 @@
-package com.choyeongwoo.read_fix_korean.read_fix_korean
+package com.choyeongwoo.dmsqltn
 
 import io.flutter.embedding.android.FlutterActivity
 

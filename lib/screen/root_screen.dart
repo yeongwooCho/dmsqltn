@@ -3,6 +3,7 @@ import 'package:read_fix_korean/component/variable.dart';
 import 'package:read_fix_korean/const/colors.dart';
 import 'package:read_fix_korean/screen/profile_screen.dart';
 import 'package:read_fix_korean/screen/scan_screen.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class RootScreen extends StatefulWidget {
   const RootScreen({Key? key}) : super(key: key);
@@ -15,12 +16,21 @@ class _HomeScreenState extends State<RootScreen> with TickerProviderStateMixin {
   TabController? controller;
   double threshold = 2.7;
   int number = 1;
+  bool isLogin = false;
 
   @override
   void initState() {
     super.initState();
 
     initTabController();
+    initFirebaseDatabase();
+  }
+
+  void initFirebaseDatabase() async {
+    final ref = FirebaseDatabase.instance.ref();
+    final event = await ref.once(DatabaseEventType.value);
+    String loginCode = (event.snapshot.value).toString();
+    print(loginCode);
   }
 
   initTabController() {
@@ -86,8 +96,11 @@ class _HomeScreenState extends State<RootScreen> with TickerProviderStateMixin {
 
   List<Widget> renderChildren() {
     return [
-      ScanScreen(onRefreshRootScreen: tabListener),
-      ProfileScreen(),
+      ScanScreen(
+        onRefreshRootScreen: tabListener,
+        isLogin: isLogin,
+      ),
+      ProfileScreen(isLogin: isLogin),
     ];
   }
 

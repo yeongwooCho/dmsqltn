@@ -10,10 +10,12 @@ import 'package:read_fix_korean/settings.dart';
 
 class ScanScreen extends StatefulWidget {
   final Function()? onRefreshRootScreen;
+  final bool isLogin;
 
   const ScanScreen({
     Key? key,
     required this.onRefreshRootScreen,
+    required this.isLogin,
   }) : super(key: key);
 
   @override
@@ -169,7 +171,8 @@ class _ScanScreenState extends State<ScanScreen> {
   }
 
   Future<void> checkRightKoreanText() async {
-    String question = 'Please choose the most complete sentence in terms of meaning and grammar from the following 5 sentences.';
+    String question =
+        'Please choose the most complete sentence in terms of meaning and grammar from the following 5 sentences.';
     for (var element in scannedTextList) {
       question += ' $element';
     }
@@ -281,9 +284,7 @@ class _ScanScreenState extends State<ScanScreen> {
 
   Widget _buildOpenCameraButton() {
     return ElevatedButton(
-      onPressed: () {
-        getImage(ImageSource.camera);
-      },
+      onPressed: widget.isLogin ? () => getImage(ImageSource.camera) : null,
       style: ElevatedButton.styleFrom(
         backgroundColor: PRIMARY_COLOR,
         minimumSize: const Size(100, 60),
@@ -292,14 +293,16 @@ class _ScanScreenState extends State<ScanScreen> {
           fontWeight: FontWeight.bold,
         ),
       ),
-      child: const Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.photo_camera),
-          SizedBox(width: 8.0),
-          Text('Camera'),
-        ],
-      ),
+      child: widget.isLogin
+          ? const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.photo_camera),
+                SizedBox(width: 8.0),
+                Text('Camera'),
+              ],
+            )
+          : const Text('로그인 코드를 입력 해주세요.'),
     );
   }
 }
