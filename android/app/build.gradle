@@ -74,5 +74,5 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    implementation 'com.google.mlkit:text-recognition-korean:16.0.0-beta5'  // 한국어 인식 추가
+    implementation 'com.google.mlkit:text-recognition-korean:16.0.0-beta6' // 한국어 인식 추가
 }
