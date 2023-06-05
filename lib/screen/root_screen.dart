@@ -114,11 +114,27 @@ class _HomeScreenState extends State<RootScreen> with TickerProviderStateMixin {
         onRefreshRootScreen: tabListener,
         isLogin: isLogin,
       ),
-      ProfileScreen(isLogin: isLogin),
+      ProfileScreen(
+        isLogin: isLogin,
+        onPressLogin: onPressLogin,
+        onPressLogout: onPressLogout,
+      ),
     ];
   }
 
   void tabListener() {
+    setState(() {});
+  }
+
+  void onPressLogin(String loginCode) async {
+    await prefs!.setString('loginCode', loginCode);
+    isLogin = true;
+    setState(() {});
+  }
+
+  void onPressLogout() async {
+    await prefs!.setString('loginCode', '000000');
+    isLogin = false;
     setState(() {});
   }
 }

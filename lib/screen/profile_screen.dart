@@ -1,13 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:read_fix_korean/const/colors.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   final bool isLogin;
+  final Function(String loginCode)? onPressLogin;
+  final Function()? onPressLogout;
 
   const ProfileScreen({
     Key? key,
     required this.isLogin,
+    required this.onPressLogin,
+    required this.onPressLogout,
   }) : super(key: key);
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  String loginCode = '';
 
   @override
   Widget build(BuildContext context) {
@@ -45,11 +56,13 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8.0),
-            if (!isLogin)
+            if (!widget.isLogin)
               TextFormField(
                 cursorColor: PRIMARY_COLOR,
                 autofocus: false,
-                onChanged: (String value) {},
+                onChanged: (String value) {
+                  loginCode = value;
+                },
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.all(20),
                   hintText: "로그인 코드를 입력해주세요.",
@@ -67,10 +80,14 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
               ),
-            if (!isLogin) const SizedBox(height: 8.0),
-            if (!isLogin)
+            if (!widget.isLogin) const SizedBox(height: 8.0),
+            if (!widget.isLogin)
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  if (widget.onPressLogin != null) {
+                    widget.onPressLogin!(loginCode);
+                  }
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: PRIMARY_COLOR,
                   shape: RoundedRectangleBorder(
@@ -84,9 +101,13 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 child: const Text('로그인'),
               ),
-            if (isLogin)
+            if (widget.isLogin)
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  if (widget.onPressLogout != null) {
+                    widget.onPressLogout!();
+                  }
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: PRIMARY_COLOR,
                   shape: RoundedRectangleBorder(
