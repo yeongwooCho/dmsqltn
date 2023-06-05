@@ -34,6 +34,7 @@ class _App extends StatelessWidget {
   }
 }
 
+//
 // class TestScreen extends StatefulWidget {
 //   const TestScreen({Key? key}) : super(key: key);
 //
@@ -43,6 +44,18 @@ class _App extends StatelessWidget {
 //
 // class _TestScreenState extends State<TestScreen> {
 //   String testValue = '하이하이';
+//   SharedPreferences? prefs;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//
+//     initSharedPreference();
+//   }
+//
+//   void initSharedPreference() async {
+//     prefs = await SharedPreferences.getInstance();
+//   }
 //
 //   @override
 //   Widget build(BuildContext context) {
@@ -61,20 +74,22 @@ class _App extends StatelessWidget {
 //               ),
 //               ElevatedButton(
 //                 onPressed: () async {
-//
-//                   // final snapshot = await ref.child('users/$userId').get();
-//                   // if (snapshot.exists) {
-//                   //   print(snapshot.value);
-//                   // } else {
-//                   //   print('No data available.');
-//                   // }
-//
-//                   // testValue = asdf.toString();
-//                   // setState(() {
-//
-//                   });
-//
-//                   // testValue = event.snapshot.value ?? 'Anonymous';
+//                   if (prefs != null) {
+//                     await prefs!.setString('loginCode', '000000');
+//                   }
+//                   if (prefs != null) {
+//                     final data = prefs!.getString('loginCode');
+//                     print(data);
+//                   }
+//                 },
+//                 child: Text(testValue),
+//               ),
+//               ElevatedButton(
+//                 onPressed: () async {
+//                   if (prefs != null) {
+//                     final data = prefs!.getString('loginCode');
+//                     print(data);
+//                   }
 //                 },
 //                 child: Text(testValue),
 //               ),

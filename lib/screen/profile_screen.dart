@@ -45,43 +45,61 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8.0),
-            TextFormField(
-              cursorColor: PRIMARY_COLOR,
-              autofocus: false,
-              onChanged: (String value) {},
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.all(20),
-                hintText: "로그인 코드를 입력해주세요.",
-                // errorText: "errorText",
-                hintStyle: TextStyle(
-                  color: BODY_TEXT_COLOR,
-                  fontSize: 14.0,
-                ),
-                border: baseBorder,
-                enabledBorder: baseBorder,
-                focusedBorder: baseBorder.copyWith(
-                  borderSide: baseBorder.borderSide.copyWith(
-                    color: PRIMARY_COLOR,
+            if (!isLogin)
+              TextFormField(
+                cursorColor: PRIMARY_COLOR,
+                autofocus: false,
+                onChanged: (String value) {},
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.all(20),
+                  hintText: "로그인 코드를 입력해주세요.",
+                  // errorText: "errorText",
+                  hintStyle: TextStyle(
+                    color: BODY_TEXT_COLOR,
+                    fontSize: 14.0,
+                  ),
+                  border: baseBorder,
+                  enabledBorder: baseBorder,
+                  focusedBorder: baseBorder.copyWith(
+                    borderSide: baseBorder.borderSide.copyWith(
+                      color: PRIMARY_COLOR,
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 8.0),
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: PRIMARY_COLOR,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+            if (!isLogin) const SizedBox(height: 8.0),
+            if (!isLogin)
+              ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: PRIMARY_COLOR,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  minimumSize: const Size(100, 55),
+                  textStyle: const TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                minimumSize: const Size(100, 55),
-                textStyle: const TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.bold,
-                ),
+                child: const Text('로그인'),
               ),
-              child: Text('로그인'),
-            ),
+            if (isLogin)
+              ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: PRIMARY_COLOR,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  minimumSize: const Size(100, 55),
+                  textStyle: const TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                child: const Text('로그아웃'),
+              ),
             const SizedBox(height: 32.0),
             Text(
               '문의',

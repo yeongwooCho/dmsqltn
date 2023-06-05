@@ -4,6 +4,7 @@ import 'package:read_fix_korean/const/colors.dart';
 import 'package:read_fix_korean/screen/profile_screen.dart';
 import 'package:read_fix_korean/screen/scan_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RootScreen extends StatefulWidget {
   const RootScreen({Key? key}) : super(key: key);
@@ -17,25 +18,38 @@ class _HomeScreenState extends State<RootScreen> with TickerProviderStateMixin {
   double threshold = 2.7;
   int number = 1;
   bool isLogin = false;
+  SharedPreferences? prefs;
 
   @override
   void initState() {
     super.initState();
 
     initTabController();
-    initFirebaseDatabase();
+    initSharedPreference();
   }
 
-  void initFirebaseDatabase() async {
-    final ref = FirebaseDatabase.instance.ref();
-    final event = await ref.once(DatabaseEventType.value);
-    String loginCode = (event.snapshot.value).toString();
-    print(loginCode);
-  }
-
-  initTabController() {
+  void initTabController() {
     controller = TabController(length: 2, vsync: this);
     controller?.addListener(tabListener);
+  }
+
+  void initSharedPreference() async {
+    prefs = await SharedPreferences.getInstance();
+
+    final loginCode = prefs!.getString('loginCode');
+    if (loginCode == null) {
+      await prefs!.setString('loginCode', '000000');
+    }
+
+    final ref = FirebaseDatabase.instance.ref();
+    final snapshot = await ref.child('login_code').get();
+    if (snapshot.exists) {
+      if (prefs != null && prefs!.getString('loginCode') != null) {
+        final String loginCode = prefs!.getString('loginCode')!;
+        isLogin = snapshot.value.toString().contains(loginCode);
+      }
+    }
+    setState(() {});
   }
 
   @override
