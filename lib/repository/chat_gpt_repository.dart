@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:read_fix_korean/settings.dart';
 
 const String token = OPENAI_API_KEY;
+
 // String question = 다음 5개의 문장 중에 의미와 문법적으로 가장 완전한 문장을 선택해줘.
 // String question = '다음 5개의 문장 중에 의미와 문법적으로 가장 완전한 문장을 선택해줘.';
 // String question = '위의 5개의 문장 중에 가장 한국어 의미를 갖는 문장은 뭐야?';
@@ -23,41 +24,50 @@ class ChatGPTRepository {
     enableLog: true,
   );
 
-  Future<String> requestQuestion({
-    required String prompt,
-  }) async {
-    final request = CompleteText(
-      prompt: prompt,
-      model: Model.textDavinci3,
-      maxTokens: 100,
-      temperature: 0.1,
-      // topP: 1,
-      // frequencyPenalty: 0.0,
-      // presencePenalty: 0.0,
-      stop: [';'],
-    );
-    String returnText = '';
-
-    try {
-      final response = await openAI.onCompletion(request: request);
-      returnText = response?.choices.last.text ?? '';
-    } on OpenAIRateLimitError catch (err) {
-      debugPrint('catch error ->${err.data?.error?.toMap()}');
-      return '';
-    }
-
-    return returnText;
-  }
+  // Future<String> requestQuestion({
+  //   required String prompt,
+  // }) async {
+  //   final request = CompleteText(
+  //     prompt: prompt,
+  //     model: Model.textDavinci3,
+  //     maxTokens: 100,
+  //     temperature: 0.0,
+  //     // topP: 1,
+  //     // frequencyPenalty: 0.0,
+  //     // presencePenalty: 0.0,
+  //     stop: [';'],
+  //   );
+  //   String returnText = '';
+  //
+  //   try {
+  //     final response = await openAI.onCompletion(request: request);
+  //     returnText = response?.choices.last.text ?? '';
+  //   } on OpenAIRateLimitError catch (err) {
+  //     debugPrint('catch error ->${err.data?.error?.toMap()}');
+  //     return '';
+  //   }
+  //
+  //   return returnText;
+  // }
 
   Future<String> chatComplete({
     required String content,
   }) async {
     final request = ChatCompleteText(
       messages: [
-        Map.of({"role": "user", "content": content})
+        // role: user, system, assistant
+        Map.of({
+          "role": "system",
+          "content": content,
+        })
       ],
-      maxToken: 200,
+      maxToken: 100,
       model: ChatModel.gptTurbo0301,
+      temperature: 0.0,
+      topP: 1,
+      frequencyPenalty: 0.0,
+      presencePenalty: 0.0,
+      stop: [';'],
     );
 
     String returnText = '';

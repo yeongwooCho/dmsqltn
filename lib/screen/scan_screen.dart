@@ -87,6 +87,7 @@ class _ScanScreenState extends State<ScanScreen> {
       errorText = '카메라로 찍은 이미지를 가져오지 못했습니다.';
     }
 
+    checkAnswer = '';
     // 가져온 텍스트 문맥 파악 후 정답 추출
     if (scannedTextList.isNotEmpty) {
       for (String scannedText in scannedTextList) {
@@ -133,33 +134,33 @@ class _ScanScreenState extends State<ScanScreen> {
     for (TextBlock block in recognizedText.blocks) {
       for (TextLine line in block.lines) {
         String lineText = line.text.trim();
+        String tempText = lineText;
 
-        if (lineText.contains('1') ||
-            lineText.contains('2') ||
-            lineText.contains('3') ||
-            lineText.contains('4') ||
-            lineText.contains('5') ||
-            lineText.contains('6') ||
-            lineText.contains('7') ||
-            lineText.contains('8') ||
-            lineText.contains('9') ||
-            lineText.contains('0')) {
-          // text에 숫자가 포함되어 있으면 제외
+        for (String charLineText in lineText.characters) {
+          for (String charSpecial in specialStringList) {
+            if (charLineText == charSpecial) {
+              tempText = tempText.replaceAll(charSpecial, '').trim();
+            }
+          }
+        }
+        if (tempText == '') {
+          // text 가 비어 있으면 제외
           continue;
         } else if (lineText.contains('문장을 선택해') ||
             lineText.contains('올바른 문장을') ||
             lineText.contains('선택해 주세요')) {
           continue;
-        } else if (lineText == '') {
-          // text 가 비어 있으면 제외
+        } else if (tempText.length < 5) {
           continue;
         }
 
-        String tempText = "${lineText.replaceAll('.', '')}.";
+        tempText = "$tempText.";
         recognizedTextList.add(tempText);
 
         debugPrint('사진 블록 라인 lineText: $lineText');
-        debugPrint('사진 블록 라인 tempText: $lineText');
+        debugPrint('사진 블록 라인 tempText: $tempText');
+        print('사진 블록 라인 lineText: $lineText');
+        print('사진 블록 라인 tempText: $tempText');
       }
     }
 
@@ -172,11 +173,11 @@ class _ScanScreenState extends State<ScanScreen> {
 
   Future<void> checkRightKoreanText() async {
     String question =
-        'Please choose the most complete sentence in terms of meaning and grammar from the following 5 sentences.';
+        "Please choose the most complete sentence in terms of meaning and grammar without text correction and modification and fix from the following 5 sentences.";
     for (var element in scannedTextList) {
-      question += ' $element';
+      question += " $element";
     }
-
+    question += ";";
     debugPrint("question: $question");
 
     // 정답 텍스트 받아오기
@@ -284,7 +285,7 @@ class _ScanScreenState extends State<ScanScreen> {
 
   Widget _buildOpenCameraButton() {
     return ElevatedButton(
-      onPressed: widget.isLogin ? () => getImage(ImageSource.camera) : null,
+      onPressed: widget.isLogin ? () => getImage(ImageSource.gallery) : null,
       style: ElevatedButton.styleFrom(
         backgroundColor: PRIMARY_COLOR,
         minimumSize: const Size(100, 60),
