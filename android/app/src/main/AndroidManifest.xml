@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
-        android:label="read_fix_korean"
+        android:label="은비수"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
 
