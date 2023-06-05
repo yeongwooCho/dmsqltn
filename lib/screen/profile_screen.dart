@@ -24,12 +24,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final titleTextStyle = TextStyle(
       color: SUB_BODY_TEXT_COLOR,
-      fontSize: 16.0,
+      fontSize: 18.0,
       fontWeight: FontWeight.bold,
     );
     final descriptionTextStyle = TextStyle(
       color: SUB_BODY_TEXT_COLOR,
-      fontSize: 12.0,
+      fontSize: 14.0,
     );
     final baseBorder = OutlineInputBorder(
       borderSide: BorderSide(
@@ -50,7 +50,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Text(
                 'Login Code',
                 style: TextStyle(
-                  fontSize: 20.0,
+                  fontSize: 24.0,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -123,7 +123,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             const SizedBox(height: 32.0),
             Text(
-              '문의',
+              '상담/문의',
               style: titleTextStyle,
             ),
             Text(
@@ -132,15 +132,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 16.0),
             Text(
-              '특징',
+              '최적화',
               style: titleTextStyle,
             ),
             Text(
-              '한국어 문제 풀이에 특화된 AI를 통해 정답을 유추할 수 있습니다.',
-              style: descriptionTextStyle,
-            ),
-            Text(
-              '코드 1회당 1기기에 가능하며 중복 로그인은 지원하지 않습니다.',
+              '5지 선다형 올바른 문장을 찾아라 정답 추출',
               style: descriptionTextStyle,
             ),
           ],
@@ -149,3 +145,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
+//
+// 문의 앞에 상담/문의 로 교체 부탁드립니다
+// 특징>> 최적화로 교체 부탁드립니다
+// 문구는 5지 선다형 올바른 문장을 찾아라 정답 추출 >> 로 교체 부탁드립니다

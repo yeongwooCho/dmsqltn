@@ -159,8 +159,6 @@ class _ScanScreenState extends State<ScanScreen> {
 
         debugPrint('사진 블록 라인 lineText: $lineText');
         debugPrint('사진 블록 라인 tempText: $tempText');
-        print('사진 블록 라인 lineText: $lineText');
-        print('사진 블록 라인 tempText: $tempText');
       }
     }
 
@@ -285,7 +283,7 @@ class _ScanScreenState extends State<ScanScreen> {
 
   Widget _buildOpenCameraButton() {
     return ElevatedButton(
-      onPressed: widget.isLogin ? () => getImage(ImageSource.gallery) : null,
+      onPressed: widget.isLogin ? () => getImage(ImageSource.camera) : null,
       style: ElevatedButton.styleFrom(
         backgroundColor: PRIMARY_COLOR,
         minimumSize: const Size(100, 60),

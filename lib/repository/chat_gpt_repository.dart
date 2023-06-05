@@ -24,32 +24,6 @@ class ChatGPTRepository {
     enableLog: true,
   );
 
-  // Future<String> requestQuestion({
-  //   required String prompt,
-  // }) async {
-  //   final request = CompleteText(
-  //     prompt: prompt,
-  //     model: Model.textDavinci3,
-  //     maxTokens: 100,
-  //     temperature: 0.0,
-  //     // topP: 1,
-  //     // frequencyPenalty: 0.0,
-  //     // presencePenalty: 0.0,
-  //     stop: [';'],
-  //   );
-  //   String returnText = '';
-  //
-  //   try {
-  //     final response = await openAI.onCompletion(request: request);
-  //     returnText = response?.choices.last.text ?? '';
-  //   } on OpenAIRateLimitError catch (err) {
-  //     debugPrint('catch error ->${err.data?.error?.toMap()}');
-  //     return '';
-  //   }
-  //
-  //   return returnText;
-  // }
-
   Future<String> chatComplete({
     required String content,
   }) async {
