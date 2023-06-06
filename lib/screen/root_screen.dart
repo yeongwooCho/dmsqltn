@@ -19,6 +19,7 @@ class _HomeScreenState extends State<RootScreen> with TickerProviderStateMixin {
   int number = 1;
   bool isLogin = false;
   SharedPreferences? prefs;
+  final DatabaseReference ref = FirebaseDatabase.instance.ref();
 
   @override
   void initState() {
@@ -39,15 +40,8 @@ class _HomeScreenState extends State<RootScreen> with TickerProviderStateMixin {
     final loginCode = prefs!.getString('loginCode');
     if (loginCode == null) {
       await prefs!.setString('loginCode', '000000');
-    }
-
-    final ref = FirebaseDatabase.instance.ref();
-    final snapshot = await ref.child('login_code').get();
-    if (snapshot.exists) {
-      if (prefs != null && prefs!.getString('loginCode') != null) {
-        final String loginCode = prefs!.getString('loginCode')!;
-        isLogin = snapshot.value.toString().contains(loginCode);
-      }
+    } else {
+      isLogin = await checkUser(loginCode);
     }
     setState(() {});
   }
@@ -111,8 +105,8 @@ class _HomeScreenState extends State<RootScreen> with TickerProviderStateMixin {
   List<Widget> renderChildren() {
     return [
       ScanScreen(
-        onRefreshRootScreen: tabListener,
         isLogin: isLogin,
+        onRefreshRootScreen: tabListener,
       ),
       ProfileScreen(
         isLogin: isLogin,
@@ -126,9 +120,22 @@ class _HomeScreenState extends State<RootScreen> with TickerProviderStateMixin {
     setState(() {});
   }
 
+  Future<bool> checkUser(String loginCode) async {
+    final snapshot = await ref.child('login_code').get();
+    if (snapshot.exists) {
+      return snapshot.value.toString().contains(loginCode);
+    }
+    return false;
+  }
+
   void onPressLogin(String loginCode) async {
-    await prefs!.setString('loginCode', loginCode);
-    isLogin = true;
+    final bool isCheckUser = await checkUser(loginCode);
+    if (isCheckUser) {
+      await prefs!.setString('loginCode', loginCode);
+      isLogin = isCheckUser;
+    } else {
+      // toast
+    }
     setState(() {});
   }
 
@@ -137,4 +144,26 @@ class _HomeScreenState extends State<RootScreen> with TickerProviderStateMixin {
     isLogin = false;
     setState(() {});
   }
+
+  // text가 들어왓을때 firebase와 비교해서 옳으면 true, 아니면 false return 함수 필요.
+
+  // 초기화때는 pref를 불러와서 위 함수를 실행
+  // true이면 isLogin true로 변경
+  // 거짓이면 아무것도 안함
+
+  // 로그인 버튼 클릭시 textfield의 텍스트를 불러와서 위함수를 실행
+  // true이면 isLogin true로 변경
+  // pref 를 해당 텍스트로 변경
+  // 거짓이면 alert or toast
+
+  // 초기화
+  // 자기 preference 를
+  // firebase와 비교한 뒤 isLogin을 변경
+
+  // 로그인 버튼
+  // 자신의 자기 preference or textField에 존재하는 text를
+  // firebase와 비교한 뒤 isLogin을 변경 & 자기 preference 변경
+
+  // 로그아웃 - 구현 완료
+  // 자기 preference의 값을 000000으로 변경한 뒤 isLogin으로 변경해야한다.
 }
