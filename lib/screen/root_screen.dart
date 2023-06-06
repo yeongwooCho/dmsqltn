@@ -121,9 +121,19 @@ class _HomeScreenState extends State<RootScreen> with TickerProviderStateMixin {
   }
 
   Future<bool> checkUser(String loginCode) async {
+    if (loginCode == '') {
+      return false;
+    }
     final snapshot = await ref.child('login_code').get();
     if (snapshot.exists) {
-      return snapshot.value.toString().contains(loginCode);
+      List<String> datas =
+          snapshot.value.toString().replaceAll('null,', '').split(',');
+      for (String data in datas) {
+        String tempString = data.replaceAll('[', '').replaceAll(']', '').trim();
+        if (tempString == loginCode) {
+          return true;
+        }
+      }
     }
     return false;
   }
