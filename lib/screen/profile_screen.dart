@@ -20,6 +20,36 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   String loginCode = '';
 
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: const Text("로그아웃 시도"),
+          content: const Text("로그아웃을 진행하면 이전의 로그인 코드는 삭제됩니다. 원하지 않으시면 취소를 눌러주세요."),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("로그아웃"),
+              onPressed: () {
+                if (widget.onPressLogout != null) {
+                  widget.onPressLogout!();
+                }
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              child: const Text("취소"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final titleTextStyle = TextStyle(
@@ -60,14 +90,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
               TextFormField(
                 cursorColor: PRIMARY_COLOR,
                 autofocus: false,
+
                 onChanged: (String value) {
                   loginCode = value;
                 },
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.all(20),
                   hintText: "로그인 코드를 입력해주세요.",
+                  errorText: null,
                   // errorText: "errorText",
                   hintStyle: TextStyle(
+
                     color: BODY_TEXT_COLOR,
                     fontSize: 14.0,
                   ),
@@ -104,9 +137,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             if (widget.isLogin)
               ElevatedButton(
                 onPressed: () {
-                  if (widget.onPressLogout != null) {
-                    widget.onPressLogout!();
-                  }
+                  // if (widget.onPressLogout != null) {
+                  //   widget.onPressLogout!();
+                  // }
+                  _showLogoutDialog();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: PRIMARY_COLOR,
