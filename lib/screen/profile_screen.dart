@@ -3,7 +3,7 @@ import 'package:read_fix_korean/const/colors.dart';
 
 class ProfileScreen extends StatefulWidget {
   final bool isLogin;
-  final Function(String loginCode)? onPressLogin;
+  final Future<bool> Function(String loginCode)? onPressLogin;
   final Function()? onPressLogout;
 
   const ProfileScreen({
@@ -19,6 +19,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   String loginCode = '';
+  String? errorText;
 
   void _showLogoutDialog() {
     showDialog(
@@ -27,7 +28,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         // return object of type Dialog
         return AlertDialog(
           title: const Text("로그아웃 시도"),
-          content: const Text("로그아웃을 진행하면 이전의 로그인 코드는 삭제됩니다. 원하지 않으시면 취소를 눌러주세요."),
+          content:
+              const Text("로그아웃을 진행하면 이전의 로그인 코드는 삭제됩니다. 원하지 않으시면 취소를 눌러주세요."),
           actions: <Widget>[
             TextButton(
               child: const Text("로그아웃"),
@@ -90,17 +92,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               TextFormField(
                 cursorColor: PRIMARY_COLOR,
                 autofocus: false,
-
                 onChanged: (String value) {
                   loginCode = value;
                 },
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.all(20),
                   hintText: "로그인 코드를 입력해주세요.",
-                  errorText: null,
-                  // errorText: "errorText",
+                  errorText: errorText,
                   hintStyle: TextStyle(
-
                     color: BODY_TEXT_COLOR,
                     fontSize: 14.0,
                   ),
@@ -116,9 +115,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             if (!widget.isLogin) const SizedBox(height: 8.0),
             if (!widget.isLogin)
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (widget.onPressLogin != null) {
-                    widget.onPressLogin!(loginCode);
+                    final bool isCheckLogin = await widget.onPressLogin!(loginCode);
+                    if (isCheckLogin == false) {
+                      errorText = '로그인 코드가 정상적이지 않습니다.';
+                    } else {
+                      errorText = null;
+                    }
                   }
                 },
                 style: ElevatedButton.styleFrom(
