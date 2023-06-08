@@ -35,13 +35,13 @@ class ChatGPTRepository {
           "content": content,
         })
       ],
-      maxToken: 100,
+      maxToken: 200,
       model: ChatModel.gptTurbo0301,
       temperature: 0.0,
       topP: 1,
       frequencyPenalty: 0.0,
       presencePenalty: 0.0,
-      stop: [';'],
+      // stop: [';'],
     );
 
     String returnText = '';

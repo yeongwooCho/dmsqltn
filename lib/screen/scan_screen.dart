@@ -91,8 +91,11 @@ class _ScanScreenState extends State<ScanScreen> {
     // 가져온 텍스트 문맥 파악 후 정답 추출
     if (scannedTextList.isNotEmpty) {
       for (String scannedText in scannedTextList) {
-        for (String correct in corrects) {
-          if (correct.contains(scannedText)) {
+        // for (String correct in corrects) {
+        for (String correct in refineCorrects) {
+          // print('correct: $correct');
+          // if (correct.contains(scannedText)) {
+          if (scannedText.contains(correct)) {
             checkAnswer = scannedText;
           }
         }
@@ -148,13 +151,18 @@ class _ScanScreenState extends State<ScanScreen> {
           continue;
         } else if (lineText.contains('문장을 선택해') ||
             lineText.contains('올바른 문장을') ||
+            lineText.contains('바른 문장을') ||
+            lineText.contains('선택해') ||
             lineText.contains('선택해 주세요')) {
           continue;
         } else if (tempText.length < 5) {
           continue;
         }
 
-        tempText = "$tempText.";
+        // ? ,
+        if (!tempText.contains('?')) {
+          tempText = "$tempText.";
+        }
         recognizedTextList.add(tempText);
 
         debugPrint('사진 블록 라인 lineText: $lineText');
@@ -170,12 +178,15 @@ class _ScanScreenState extends State<ScanScreen> {
   }
 
   Future<void> checkRightKoreanText() async {
-    String question =
-        "Please choose the most complete sentence in terms of meaning and grammar without text correction and modification and fix from the following 5 sentences.";
+    // String question =
+    //     // "Please choose a single the most complete sentence in terms of meaning and grammar without text correction and modification and fix from the following five sentences.\n";
+    // "Please choose a single the most complete sentence or a single the most complete word in terms of meaning and grammar from the following five sentences.\n";
+    // String question = '다음은 한국어 문장 5개 중에 문맥이 가장 자연스러운 문장 찾기 문제 입니다.\n';
+    String question = "다음 다섯 문장 중에서 의미와 문법 면에서 가장 완성도가 높은 문장 하나를 선택해주세요.\n";
     for (var element in scannedTextList) {
-      question += " $element";
+      question += "'$element'\n";
     }
-    question += ";";
+    // question += "\n;";
     debugPrint("question: $question");
 
     // 정답 텍스트 받아오기
@@ -201,7 +212,7 @@ class _ScanScreenState extends State<ScanScreen> {
     // TODO: 텍스트 전처리
     String returnText = answer.trim();
 
-    returnText = returnText.split('.')[0].trim();
+    returnText = returnText.split(' ')[0].trim().replaceAll("'", '');
     // flutter: answer: 오페라를 한번 보러 가봐. (Let's go see an opera.)
     // returnText = answer.replaceAll('.', '').trim();
     // returnText = returnText.replaceAll('"', '').trim();
@@ -216,6 +227,7 @@ class _ScanScreenState extends State<ScanScreen> {
     // if (returnText.contains('"')) {
     //   returnText = returnText.split('"')[1].trim();
     // }
+    debugPrint('returnText: $returnText');
     return returnText;
   }
 

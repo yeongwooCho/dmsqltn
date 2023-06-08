@@ -40,6 +40,7 @@ class _HomeScreenState extends State<RootScreen> with TickerProviderStateMixin {
     final loginCode = prefs!.getString('loginCode');
     if (loginCode == null) {
       await prefs!.setString('loginCode', '000000');
+      isLogin = await checkUser('000000');
     } else {
       isLogin = await checkUser(loginCode);
     }
