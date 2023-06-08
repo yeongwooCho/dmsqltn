@@ -5,6 +5,7 @@ import 'package:read_fix_korean/screen/profile_screen.dart';
 import 'package:read_fix_korean/screen/scan_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+// import 'dart:math';
 
 class RootScreen extends StatefulWidget {
   const RootScreen({Key? key}) : super(key: key);
@@ -28,6 +29,22 @@ class _HomeScreenState extends State<RootScreen> with TickerProviderStateMixin {
     initTabController();
     initSharedPreference();
   }
+
+  // void updateLoginCode() async {
+  //   const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+  //   Random _rnd = Random();
+  //   String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
+  //       length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+  //
+  //   DatabaseReference refe = FirebaseDatabase.instance.ref("login_code/");
+  //   // getRandomString(8);
+  //
+  //   for (int i = 0; i < 0; i ++) {
+  //     await refe.update({
+  //       "$i": getRandomString(8),
+  //     });
+  //   }
+  // }
 
   void initTabController() {
     controller = TabController(length: 2, vsync: this);
